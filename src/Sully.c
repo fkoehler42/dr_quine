@@ -1,15 +1,7 @@
 #include<stdio.h>
-#include<unistd.h>
-#include<fcntl.h>
-#define GCC "/usr/bin/gcc"
-#define OUT_BIN "Sully_%d"
-#define OUT_SRC OUT_BIN ".c"
-#define STR "#include<stdio.h>%c#include<unistd.h>%c#include<fcntl.h>%c#define GCC %c/usr/bin/gcc%c#define STR %c%s%c%cint main(){int i=%d;char*bin;char*src;int fd=open(bin,O_WRONLY|O_CREAT|O_TRUNC,0644);dprintf(fd,STR,10,10,10,34,STR,34,10,i-1,34,i-1,34,10);close(fd);%cexecl(GCC,GCC,src,%c-o%c,bin,NULL);if(i>0)execv(bin,NULL);}%c"
+#include<stdlib.h>
+#define STR "#include<stdio.h>%c#include<stdlib.h>%c#define STR %c%s%c%cint main(){%cint i=%d;char bin[64];char src[64];char cmd[1000];sprintf(bin,%cSully_%%d%c,i);sprintf(src,%cSully_%%d.c%c,i);%cFILE*fs=fopen(src,%cw%c);fprintf(fs,STR,10,10,34,STR,34,10,10,i-1,34,34,34,34,10,34,34,10,34,34,34,34,10);fclose(fs);%csprintf(cmd,%cgcc -Wextra -Werror -Wall %%s -o %%s%c,src,bin);system(cmd);if(i>0){sprintf(cmd,%c./%%s%c,bin);system(cmd);}}%c"
 int main(){
-	int i=5;char*bin;char*src;
-	asprintf(&bin,OUT_BIN,i);asprintf(&src,OUT_SRC,i);
-	int fd=open(src,O_WRONLY|O_CREAT|O_TRUNC,0644);
-	dprintf(fd,STR,10,10,10,34,34,10,34,STR,34,10,i-1,10,34,34,10);
-	close(fd);
-	execl(GCC,GCC,src,"-o",bin,NULL);if(i>0)execv(bin,NULL);
-}
+int i=5;char bin[64];char src[64];char cmd[1000];sprintf(bin,"Sully_%d",i);sprintf(src,"Sully_%d.c",i);
+FILE*fs=fopen(src,"w");fprintf(fs,STR,10,10,34,STR,34,10,10,i-1,34,34,34,34,10,34,34,10,34,34,34,34,10);fclose(fs);
+sprintf(cmd,"gcc -Wextra -Werror -Wall %s -o %s",src,bin);system(cmd);if(i>0){sprintf(cmd,"./%s",bin);system(cmd);}}
